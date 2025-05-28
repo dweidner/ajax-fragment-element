@@ -1,0 +1,37 @@
+{
+  "name": "@dweidner/ajax-fragment-element",
+  "description": "A custom element to enable partial page updates via AJAX.",
+  "homepage": "https://github.com/dweidner/ajax-fragment-element#readme",
+  "license": "ISC",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/ajax-fragment-element.js",
+  "author": {
+    "name": "Daniel Weidner",
+    "email": "hallo@danielweidner.de",
+    "url": "https://danielweidner.de/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dweidner/ajax-fragment-element.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dweidner/ajax-fragment-element/issues"
+  },
+  "scripts": {
+    "start": "http-server .",
+    "lint": "eslint .",
+    "format": "eslint --fix ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.26.0",
+    "eslint": "^9.26.0",
+    "eslint-plugin-jsdoc": "^50.6.17",
+    "eslint-plugin-wc": "^3.0.1",
+    "globals": "^16.1.0",
+    "http-server": "^14.1.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

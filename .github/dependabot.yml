@@ -1,0 +1,45 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "chore:"
+    labels:
+      - "type: maintanance"
+  - package-ecosystem: "npm"
+    directory: "/"
+    versioning-strategy: increase
+    schedule:
+      interval: "monthly"
+    allow:
+      - dependency-type: "direct"
+    commit-message:
+      prefix: "chore:"
+    labels:
+      - "type: maintanance"
+    groups:
+      vite:
+        patterns:
+          - "vite*"
+      postcss:
+        patterns:
+          - "postcss*"
+      eslint:
+        patterns:
+          - "eslint*"
+      stylelint:
+        patterns:
+          - "stylelint*"
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "chore:"
+    labels:
+      - "type: maintanance"
+    ignore:
+      - dependency-name: "node"
+        update-types: ["version-update:semver-major"] # Use the latest LTS version

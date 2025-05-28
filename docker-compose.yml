@@ -1,0 +1,29 @@
+name: "ajax-fragment-element"
+
+services:
+  node:
+    build:
+      context: "."
+      target: "development"
+      args:
+        - "UID=${UID:-1000}"
+        - "GID=${GID:-1000}"
+    restart: "unless-stopped"
+    tty: true
+    init: true
+    env_file:
+      - path: ".env"
+        required: false
+    volumes:
+      - ".:/usr/src/app"
+      - "node_modules:/usr/src/app/node_modules"
+    ports:
+      - "${FORWARD_HTTP_PORT:-8080}:8080"
+    healthcheck:
+      test: "wget --no-verbose --spider --tries=1 node:8080 || exit 1"
+      interval: "30s"
+      timeout: "30s"
+      retries: 3
+
+volumes:
+  node_modules:

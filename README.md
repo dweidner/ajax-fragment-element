@@ -1,4 +1,4 @@
-# `<opt-in>`
+# `<ajax-fragment>`
 
 A custom element to enable partial page updates via AJAX.
 

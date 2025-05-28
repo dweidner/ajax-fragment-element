@@ -24,7 +24,7 @@
     "format": "eslint --fix ."
   },
   "devDependencies": {
-    "@eslint/js": "^9.26.0",
+    "@eslint/js": "^9.27.0",
     "eslint": "^9.26.0",
     "eslint-plugin-jsdoc": "^50.6.17",
     "eslint-plugin-wc": "^3.0.1",

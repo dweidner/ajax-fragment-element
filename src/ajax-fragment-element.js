@@ -12,41 +12,12 @@ import {
   nextMacroTask,
 } from './utilities/queue.js';
 
-/**
- * @type {HTMLTemplateElement}
- */
-const template = document.createElement('template');
-
-template.innerHTML = /*html*/`
-  <style>
-    :host {
-      display: block;
-    }
-
-    .visually-hidden {
-      position: absolute;
-      top: 0px;
-      left: 0px;
-      display: block;
-      width: 4px;
-      height: 4px;
-      padding: 0;
-      border: none;
-      margin: 0;
-      opacity: 0;
-      overflow: hidden;
-      visibility: visible;
-      pointer-events: none;
-    }
-  </style>
-  <div role="status" class="visually-hidden"></div>
-  <slot></slot>
-`;
-
-/**
- * @typedef {string|string[][]|{[key: string]: string}|FormData|URLSearchParams} RequestData
- */
 export class AjaxFragmentElement extends HTMLElement {
+
+  /**
+   * @type {?Function}
+   */
+  static #morphStategy = null;
 
   /**
    * @type {boolean}
@@ -78,13 +49,6 @@ export class AjaxFragmentElement extends HTMLElement {
     }
   }
 
-  constructor() {
-    super();
-
-    const shadowRoot = this.attachShadow({ mode: 'open' });
-    shadowRoot.appendChild(template.content.cloneNode(true));
-  }
-
   /**
    * @returns {void}
    */
@@ -110,7 +74,7 @@ export class AjaxFragmentElement extends HTMLElement {
   /**
    * @param {string} url
    * @param {string} [method]
-   * @param {RequestData} [data]
+   * @param {string|string[][]|{[key: string]: string}|FormData|URLSearchParams} [data]
    * @returns {Request}
    */
   request(url, method = RequestMethod.GET, data = {}) {
@@ -171,7 +135,7 @@ export class AjaxFragmentElement extends HTMLElement {
   /**
    * @param {string} url
    * @param {string} [method]
-   * @param {RequestData} [data]
+   * @param {string|string[][]|{[key: string]: string}|FormData|URLSearchParams} [data]
    * @returns {Promise<void>}
    */
   async load(url, method = RequestMethod.GET, data = {}) {
@@ -180,58 +144,51 @@ export class AjaxFragmentElement extends HTMLElement {
     }
 
     this.#markAsBusy();
-    this.#announce('loading', 'Loading fragment …');
 
     try {
-      const currentFragment = document.getElementById(this.target);
+      const targetDocument = await this.fetch(
+        this.request(url, method, data)
+      );
 
-      if (! currentFragment) {
-        throw new Error(`Element not found: an element with the id ${this.target} does not exist in the source document`);
-      }
-
-      const request = this.request(url, method, data);
-
-      const targetDocument = await this.fetch(request);
-      const targetFragment = targetDocument.getElementById(this.target);
-
-      if (! targetFragment) {
-        throw new Error(`Element not found: an element with the id ${this.target} does not exist in the target document`);
-      }
-
-      const isCancelled = this.#fire('update', {
-        cancelable: true,
-        detail: {
-          currentFragment,
-          targetFragment,
-        },
-      });
+      await nextMacroTask();
+      const isCancelled = this.#fire('update', {cancelable: true});
 
       if (isCancelled) {
         this.#markAsIdle();
-        this.#announce('cancelled', 'Operation cancelled.');
         return;
       }
 
-      if ('startViewTransition' in document) {
-        document.startViewTransition(() => currentFragment.replaceChildren(...targetFragment.children));
-      } else {
-        currentFragment.replaceChildren(...targetFragment.children);
-      }
+      await this.morphWith(targetDocument);
 
-      this.#fire('updated', {
-        detail: {
-          currentFragment,
-          targetFragment,
-        },
-      });
-
-      this.#announce('success', 'Success!');
+      await nextMacroTask();
+      this.#fire('updated');
     } catch (error) {
-      this.#announce('error', 'Something went wrong. Please try again.');
       console.error(error);
     } finally {
       this.#markAsIdle();
     }
+  }
+
+  /**
+   * @param {Document} targetDocument
+   * @returns {Promise<void>}
+   */
+  async morphWith(targetDocument) {
+    const morphStrategy = AjaxFragmentElement.getMorphStrategy();
+
+    const currentFragment = document.getElementById(this.target);
+
+    if (! currentFragment) {
+      throw new Error(`Element not found: an element with the id ${this.target} does not exist in the source document`);
+    }
+
+    const targetFragment = targetDocument.getElementById(this.target);
+
+    if (! targetFragment) {
+      throw new Error(`Element not found: an element with the id ${this.target} does not exist in the target document`);
+    }
+
+    return morphStrategy(currentFragment, targetFragment);
   }
 
   /**
@@ -252,30 +209,53 @@ export class AjaxFragmentElement extends HTMLElement {
 
   /**
    * @param {string} tagName
-   * @returns {this}
+   * @returns {void}
    */
   static define(tagName) {
     if (! ('customElements' in window)) {
       console.warn('Custom elements are not supported by your browser.');
-      return this;
+      return;
     }
 
     const custromElementName = customElements.getName(this);
 
     if (custromElementName) {
       console.warn(`${this.name} already defined as <${custromElementName}>.`);
-      return this;
+      return;
     }
 
     const customElement = customElements.get(tagName);
 
     if (customElement && customElement !== this) {
       console.warn(`<${tagName}> already defined as ${customElement.name}`);
-      return this;
+      return;
     }
 
     customElements.define(tagName, this);
-    return this;
+  }
+
+  /**
+   * @returns {(currentFragment: Element, targetFragment: Element) => Promise<void>}
+   */
+  static getMorphStrategy() {
+    return this.#morphStategy || function (currentFragment, targetFragment) {
+      const morph = () => currentFragment.replaceChildren(...targetFragment.children);
+
+      if (document.startViewTransition) {
+        const viewTransition = document.startViewTransition(() => morph());
+        return viewTransition.updateCallbackDone;
+      }
+
+      return Promise.resolve(morph());
+    };
+  }
+
+  /**
+   * @param {(currentDocument: Document, targetDocument: Document) => Promise<void>} fn
+   * @returns {void}
+   */
+  static useMorphStrategy(fn) {
+    this.#morphStategy = fn;
   }
 
   /**
@@ -309,29 +289,6 @@ export class AjaxFragmentElement extends HTMLElement {
 
     this.targetElement?.removeAttribute('loading');
     this.targetElement?.removeAttribute('aria-busy');
-
-    return this;
-  }
-
-  /**
-   * @param {string} key
-   * @param {?string} fallback
-   * @returns {?string}
-   */
-  #translate(key, fallback = null) {
-    return this.getAttribute(`status-${key}`) || fallback;
-  }
-
-  /**
-   * @param {string} key
-   * @param {?string} fallback
-   * @returns {this}
-   */
-  #announce(key, fallback = null) {
-    const status = this.shadowRoot.querySelector('[role="status"]');
-    const message = this.#translate(key, fallback) || key;
-
-    status.textContent = message;
 
     return this;
   }

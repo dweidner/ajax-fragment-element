@@ -38,7 +38,7 @@ Make sure you include the `<script>` in your project (choose one of these):
 
 ```html
 <!-- Host yourself -->
-<script type="module" src="opt-in.js"></script>
+<script type="module" src="ajax-fragment-element.js"></script>
 ```
 
 ```html

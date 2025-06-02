@@ -12,17 +12,101 @@ import {
   nextMacroTask,
 } from './utilities/queue.js';
 
+/**
+ * @type {HTMLTemplateElement}
+ */
+const template = document.createElement('template');
+
+template.innerHTML = /* html */`
+  <style>
+    :host {
+      display: block;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      display: block;
+      width: 4px;
+      height: 4px;
+      padding: 0;
+      border: none;
+      margin: 0;
+      opacity: 0;
+      overflow: hidden;
+      visibility: visible;
+      pointer-events: none;
+    }
+  </style>
+  <div role="status" class="visually-hidden"></div>
+  <slot></slot>
+`;
+
 export class AjaxFragmentElement extends HTMLElement {
 
   /**
-   * @type {?Function}
+   * @param {string} tagName
    */
-  static #morphStategy = null;
+  static define(tagName) {
+    if (! ('customElements' in window)) {
+      console.warn('Custom elements are not supported by your browser.');
+      return;
+    }
+
+    const custromElementName = customElements.getName(this);
+
+    if (custromElementName) {
+      console.warn(`${this.name} already defined as <${custromElementName}>.`);
+      return;
+    }
+
+    const customElement = customElements.get(tagName);
+
+    if (customElement && customElement !== this) {
+      console.warn(`<${tagName}> already defined as ${customElement.name}`);
+      return;
+    }
+
+    customElements.define(tagName, this);
+  }
 
   /**
-   * @type {boolean}
+   * @returns {{createHTML: string}}
    */
-  #busy = false;
+  static getCSPTrustedTypesPolicy() {
+    return this.#cspTrustedTypesPolicy;
+  }
+
+  /**
+   * @param {{createHTML: string}} policy
+   */
+  static useCSPTrustedTypesPolicy(policy) {
+    this.#cspTrustedTypesPolicy = policy;
+  }
+
+  /**
+   * @returns {(currentFragment: Element, targetFragment: Element) => Promise<void>}
+   */
+  static getMorphStrategy() {
+    return this.#morphStategy || function (currentFragment, targetFragment) {
+      const morph = () => currentFragment.replaceChildren(...targetFragment.children);
+
+      if (document.startViewTransition) {
+        const viewTransition = document.startViewTransition(() => morph());
+        return viewTransition.updateCallbackDone;
+      }
+
+      return Promise.resolve(morph());
+    };
+  }
+
+  /**
+   * @param {(currentDocument: Document, targetDocument: Document) => Promise<void>} fn
+   */
+  static useMorphStrategy(fn) {
+    this.#morphStategy = fn;
+  }
 
   /**
    * @returns {?AjaxFragmentElement}
@@ -50,8 +134,27 @@ export class AjaxFragmentElement extends HTMLElement {
   }
 
   /**
-   * @returns {void}
+   * @type {?Promise<{createHtml: string}>}
    */
+  static #cspTrustedTypesPolicy = null;
+
+  /**
+   * @type {?Function}
+   */
+  static #morphStategy = null;
+
+  /**
+   * @type {boolean}
+   */
+  #busy = false;
+
+  constructor() {
+    super();
+
+    const shadowRoot = this.attachShadow({ mode: 'open' });
+    shadowRoot.appendChild(template.content.cloneNode(true));
+  }
+
   connectedCallback() {
     window.addEventListener('popstate', this);
 
@@ -61,9 +164,6 @@ export class AjaxFragmentElement extends HTMLElement {
     this.#recordState(location.href, {data: location.search}, true);
   }
 
-  /**
-   * @returns {void}
-   */
   disconnectedCallback() {
     window.removeEventListener('popstate', this);
 
@@ -104,7 +204,7 @@ export class AjaxFragmentElement extends HTMLElement {
   async fetch(request) {
     try {
       await nextMacroTask();
-      await this.#fire(['loadstart'], {detail: {request}});
+      this.#fire(['loadstart']);
 
       const response = await fetch(request);
 
@@ -121,12 +221,12 @@ export class AjaxFragmentElement extends HTMLElement {
       const responseText = await response.text();
 
       await nextMacroTask();
-      this.#fire(['load', 'loaded'], {detail: {request, response}});
+      this.#fire(['load', 'loadend']);
 
-      return (new DOMParser()).parseFromString(responseText, 'text/html');
+      return this.#parseHTML(responseText);
     } catch (error) {
       await nextMacroTask();
-      this.#fire(['error', 'loadend'], {detail: {request, error}});
+      this.#fire(['error', 'loadend'], {error});
 
       throw error;
     }
@@ -139,61 +239,37 @@ export class AjaxFragmentElement extends HTMLElement {
    * @returns {Promise<void>}
    */
   async load(url, method = RequestMethod.GET, data = {}) {
-    if (this.#isBusy()) {
+    if (this.#busy) {
       return;
     }
 
     this.#markAsBusy();
 
     try {
+      await nextMacroTask();
+      this.#fire(['updatestart']);
+      this.#announce('updatestart', 'Loading …');
+
       const targetDocument = await this.fetch(
-        this.request(url, method, data)
+        this.request(url, method, data),
       );
 
-      await nextMacroTask();
-      const isCancelled = this.#fire('update', {cancelable: true});
-
-      if (isCancelled) {
-        this.#markAsIdle();
-        return;
-      }
-
-      await this.morphWith(targetDocument);
+      await this.#morphFragment(targetDocument);
 
       await nextMacroTask();
-      this.#fire('updated');
+      this.#fire(['update', 'updateend']);
+      this.#announce('update', 'Success!');
     } catch (error) {
-      console.error(error);
+      await nextMacroTask();
+      this.#fire(['error', 'updateend'], {error});
+      this.#announce('error', 'Something went wrong. Please try again.');
     } finally {
       this.#markAsIdle();
     }
   }
 
   /**
-   * @param {Document} targetDocument
-   * @returns {Promise<void>}
-   */
-  async morphWith(targetDocument) {
-    const morphStrategy = AjaxFragmentElement.getMorphStrategy();
-
-    const currentFragment = document.getElementById(this.target);
-
-    if (! currentFragment) {
-      throw new Error(`Element not found: an element with the id ${this.target} does not exist in the source document`);
-    }
-
-    const targetFragment = targetDocument.getElementById(this.target);
-
-    if (! targetFragment) {
-      throw new Error(`Element not found: an element with the id ${this.target} does not exist in the target document`);
-    }
-
-    return morphStrategy(currentFragment, targetFragment);
-  }
-
-  /**
    * @param {Event} event
-   * @returns {void}
    */
   handleEvent(event) {
     const {type, target} = event;
@@ -208,61 +284,41 @@ export class AjaxFragmentElement extends HTMLElement {
   }
 
   /**
-   * @param {string} tagName
-   * @returns {void}
+   * @param {string} key
+   * @param {?string} fallback
+   * @returns {?string}
    */
-  static define(tagName) {
-    if (! ('customElements' in window)) {
-      console.warn('Custom elements are not supported by your browser.');
-      return;
-    }
-
-    const custromElementName = customElements.getName(this);
-
-    if (custromElementName) {
-      console.warn(`${this.name} already defined as <${custromElementName}>.`);
-      return;
-    }
-
-    const customElement = customElements.get(tagName);
-
-    if (customElement && customElement !== this) {
-      console.warn(`<${tagName}> already defined as ${customElement.name}`);
-      return;
-    }
-
-    customElements.define(tagName, this);
+  #translate(key, fallback = null) {
+    return this.getAttribute(`status-${key}`) || fallback;
   }
 
   /**
-   * @returns {(currentFragment: Element, targetFragment: Element) => Promise<void>}
+   * @param {string} key
+   * @param {?string} fallback
+   * @returns {this}
    */
-  static getMorphStrategy() {
-    return this.#morphStategy || function (currentFragment, targetFragment) {
-      const morph = () => currentFragment.replaceChildren(...targetFragment.children);
+  #announce(key, fallback = null) {
+    const status = this.shadowRoot.querySelector('[role="status"]');
+    const message = this.#translate(key, fallback) || key;
 
-      if (document.startViewTransition) {
-        const viewTransition = document.startViewTransition(() => morph());
-        return viewTransition.updateCallbackDone;
-      }
+    status.textContent = message;
 
-      return Promise.resolve(morph());
-    };
+    return this;
   }
 
   /**
-   * @param {(currentDocument: Document, targetDocument: Document) => Promise<void>} fn
-   * @returns {void}
+   * @param {string|string[]} eventTypes
+   * @param {object} [detail]
+   * @returns {this}
    */
-  static useMorphStrategy(fn) {
-    this.#morphStategy = fn;
-  }
+  #fire(eventTypes, detail = {}) {
+    eventTypes = Array.isArray(eventTypes) ? eventTypes : [eventTypes];
 
-  /**
-   * @returns {boolean}
-   */
-  #isBusy() {
-    return this.#busy;
+    for (const eventType of eventTypes) {
+      this.dispatchEvent(new CustomEvent(eventType, {detail}));
+    }
+
+    return this;
   }
 
   /**
@@ -294,18 +350,39 @@ export class AjaxFragmentElement extends HTMLElement {
   }
 
   /**
-   * @param {string|string[]} eventTypes
-   * @param {object} [options]
-   * @returns {boolean}
+   * @param {string} responseText
+   * @returns {Document}
    */
-  #fire(eventTypes, options = {}) {
-    eventTypes = Array.isArray(eventTypes) ? eventTypes : [eventTypes];
+  #parseHTML(responseText) {
+    const cspTrustedTypesPolicy = AjaxFragmentElement.getCSPTrustedTypesPolicy();
 
-    const cancelled = !eventTypes.every((eventType) => this.dispatchEvent(
-      new CustomEvent(`ajax-fragment:${eventType}`, options),
-    ));
+    if (cspTrustedTypesPolicy) {
+      responseText = cspTrustedTypesPolicy.createHTML(responseText);
+    }
 
-    return cancelled;
+    return (new DOMParser()).parseFromString(responseText, 'text/html');
+  }
+
+  /**
+   * @param {Document} targetDocument
+   * @returns {Promise<void>}
+   */
+  async #morphFragment(targetDocument) {
+    const morphStrategy = AjaxFragmentElement.getMorphStrategy();
+
+    const currentFragment = document.getElementById(this.target);
+
+    if (! currentFragment) {
+      throw new Error(`Element not found: an element with the id ${this.target} does not exist in the source document`);
+    }
+
+    const targetFragment = targetDocument.getElementById(this.target);
+
+    if (! targetFragment) {
+      throw new Error(`Element not found: an element with the id ${this.target} does not exist in the target document`);
+    }
+
+    return morphStrategy(currentFragment, targetFragment);
   }
 
   /**

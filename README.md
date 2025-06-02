@@ -7,7 +7,18 @@ A custom element to enable partial page updates via AJAX.
 ## Examples
 
 ```html
-  <ajax-fragment>
+  <ajax-fragment id="filters" target="posts">
+    <form method="get" data-use-ajax>
+      <!-- Form HTML omitted for brevity -->
+    </form>
+  </ajax-fragment>
+
+  <ajax-fragment id="posts">
+    <ol>
+      <li><!-- Post HTML omitted for brevity --></li>
+      <li><!-- Post HTML omitted for brevity --></li>
+      <li><!-- Post HTML omitted for brevity --></li>
+    </ol>
   </ajax-fragment>
 ```
 
@@ -42,5 +53,5 @@ Make sure you include the `<script>` in your project (choose one of these):
 
 ## Features
 
-- Load 
-- Remember a users decision for future requests
+- Load a partial page fragment via AJAX
+- Customizable morphing strategy

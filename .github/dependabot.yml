@@ -20,18 +20,11 @@ updates:
     labels:
       - "type: maintanance"
     groups:
-      vite:
-        patterns:
-          - "vite*"
-      postcss:
-        patterns:
-          - "postcss*"
       eslint:
         patterns:
           - "eslint*"
-      stylelint:
-        patterns:
-          - "stylelint*"
+          - "@eslint/*"
+          - "globals"
   - package-ecosystem: "docker"
     directory: "/"
     schedule:

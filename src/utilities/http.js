@@ -24,8 +24,21 @@ export function addSearchParams(url, params) {
   url = new URL(url, location.origin);
   params = new URLSearchParams(params);
 
+  const valuesByKey = new Map();
+
   for (const [key, value] of params) {
-    url.searchParams.set(key, value);
+    const values = valuesByKey.get(key) || [];
+
+    values.push(value);
+    valuesByKey.set(key, values);
+  }
+
+  for (const [key, values] of valuesByKey) {
+    url.searchParams.delete(key);
+
+    for (const value of values) {
+      url.searchParams.append(key, value);
+    }
   }
 
   return url;

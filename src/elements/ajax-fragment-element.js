@@ -212,17 +212,17 @@ export class AjaxFragmentElement extends HTMLElement {
       this.#clearError();
 
       await nextMacroTask();
-      this.#emit(['updatestart']);
+      this.#fire(['updatestart']);
 
       const targetDocument = await this.#fetch(this.#request(url, method, data));
       await this.#morphFragment(targetDocument);
 
       await nextMacroTask();
-      this.#emit(['update', 'updateend']);
+      this.#fire(['update', 'updateend']);
       this.#setStatus('success', 'Content loaded.');
     } catch (error) {
       await nextMacroTask();
-      this.#emit(['error', 'updateend'], {detail: { error }});
+      this.#fire(['error', 'updateend'], {detail: { error }});
       this.#setError('error', 'Failed to load content.');
       this.#clearStatus();
     } finally {
@@ -256,7 +256,7 @@ export class AjaxFragmentElement extends HTMLElement {
    * @param {object} [options]
    * @returns {void}
    */
-  #emit(eventTypes, options = {}) {
+  #fire(eventTypes, options = {}) {
     const types = Array.isArray(eventTypes) ? eventTypes : [eventTypes];
 
     for (const eventType of types) {
@@ -297,7 +297,7 @@ export class AjaxFragmentElement extends HTMLElement {
   async #fetch(request) {
     try {
       await nextMacroTask();
-      this.#emit(['loadstart']);
+      this.#fire(['loadstart']);
 
       const response = await fetch(request);
 
@@ -314,12 +314,12 @@ export class AjaxFragmentElement extends HTMLElement {
       const responseText = await response.text();
 
       await nextMacroTask();
-      this.#emit(['load', 'loadend']);
+      this.#fire(['load', 'loadend']);
 
       return this.#parseHTML(responseText);
     } catch (error) {
       await nextMacroTask();
-      this.#emit(['error', 'loadend'], {detail: { error }});
+      this.#fire(['error', 'loadend'], {detail: { error }});
 
       throw error;
     }

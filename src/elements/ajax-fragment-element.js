@@ -33,14 +33,14 @@ export class AjaxFragmentElement extends HTMLElement {
   /**
    * @returns {?TrustedTypesPolicy}
    */
-  static getCSPTrustedTypesPolicy() {
+  static getTrustedTypesPolicy() {
     return this.#cspTrustedTypesPolicy;
   }
 
   /**
    * @param {?TrustedTypesPolicy} policy
    */
-  static useCSPTrustedTypesPolicy(policy) {
+  static useTrustedTypesPolicy(policy) {
     this.#cspTrustedTypesPolicy = policy;
   }
 
@@ -91,7 +91,7 @@ export class AjaxFragmentElement extends HTMLElement {
   set loading(value) {
     this.toggleAttribute('loading', value);
     this.targetElement?.toggleAttribute('loading', value);
-    this.progressElement?.toggleAttribute('hidden', ! value);
+    this.progressElement?.toggleAttribute('hidden', !value);
   }
 
   /**
@@ -121,42 +121,44 @@ export class AjaxFragmentElement extends HTMLElement {
   }
 
   /**
-   * @returns {?HTMLElement}
+   * @returns {?HTMLProgressElement}
    */
   get progressElement() {
-    const {id} = this;
+    const {target} = this;
 
-    if (! id) {
+    if (! target) {
       return null;
     }
 
-    return document.querySelector(`[data-ajax-progress~="${id}"]`);
+    return /** @type {?HTMLProgressElement} */ (
+      document.querySelector(`[data-ajax-progress~="${target}"]`)
+    );
   }
 
   /**
    * @returns {?HTMLElement}
    */
   get statusElement() {
-    const {id} = this;
+    const {target} = this;
 
-    if (! id) {
+    if (! target) {
       return null;
     }
 
-    return document.querySelector(`[data-ajax-status~="${id}"]`);
+    return document.querySelector(`[data-ajax-status~="${target}"]`);
   }
 
   /**
    * @returns {?HTMLElement}
    */
   get errorElement() {
-    const {id} = this;
+    const {target} = this;
 
-    if (! id) {
+    if (! target) {
       return null;
     }
 
-    return document.querySelector(`[data-ajax-error~="${id}"]`);
+    return document.querySelector(`[data-ajax-error~="${target}"]`);
   }
 
   /**
@@ -235,11 +237,13 @@ export class AjaxFragmentElement extends HTMLElement {
    * @param {Event} event
    */
   handleEvent(event) {
-    if (event.type === 'click') {
+    const {type} = event;
+
+    if (type === 'click') {
       this.#handleClick(/** @type {MouseEvent} */ (event));
-    } else if (event.type === 'submit') {
+    } else if (type === 'submit') {
       this.#handleSubmit(/** @type {SubmitEvent} */ (event));
-    } else if (event.type === 'popstate') {
+    } else if (type === 'popstate') {
       this.#handlePopState(/** @type {PopStateEvent} */ (event));
     }
   }
@@ -449,10 +453,10 @@ export class AjaxFragmentElement extends HTMLElement {
    * @returns {Document}
    */
   #parseHTML(responseText) {
-    const cspTrustedTypesPolicy = AjaxFragmentElement.getCSPTrustedTypesPolicy();
+    const trustedTypesPolicy = AjaxFragmentElement.getTrustedTypesPolicy();
 
-    if (cspTrustedTypesPolicy) {
-      responseText = cspTrustedTypesPolicy.createHTML(responseText);
+    if (trustedTypesPolicy) {
+      responseText = trustedTypesPolicy.createHTML(responseText);
     }
 
     return (new DOMParser()).parseFromString(responseText, 'text/html');

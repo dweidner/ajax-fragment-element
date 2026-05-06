@@ -34,7 +34,7 @@
           "members": [
             {
               "kind": "method",
-              "name": "getCSPTrustedTypesPolicy",
+              "name": "getTrustedTypesPolicy",
               "static": true,
               "return": {
                 "type": {
@@ -44,7 +44,7 @@
             },
             {
               "kind": "method",
-              "name": "useCSPTrustedTypesPolicy",
+              "name": "useTrustedTypesPolicy",
               "static": true,
               "parameters": [
                 {
@@ -157,7 +157,7 @@
               "name": "progressElement",
               "return": {
                 "type": {
-                  "text": "?HTMLElement"
+                  "text": "?HTMLProgressElement"
                 }
               },
               "readonly": true

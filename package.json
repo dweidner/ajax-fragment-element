@@ -19,7 +19,7 @@
     "url": "https://github.com/dweidner/ajax-fragment-element/issues"
   },
   "scripts": {
-    "start": "http-server ./examples",
+    "start": "http-server .",
     "lint": "eslint .",
     "format": "eslint --fix ."
   },

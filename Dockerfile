@@ -1,13 +1,13 @@
 # syntax=docker/dockerfile:1
 
-FROM node:24.15-alpine3.22 AS base
+FROM node:24.15-alpine3.23 AS base
 
 ARG UID=1000
 ARG GID=1000
 
 RUN <<-EOR
 	set -e
-	apk add --update --no-cache shadow=~4.19
+	apk add --update --no-cache shadow=~4.18
 	groupmod -g "${GID}" node
 	usermod -u "${UID}" -g "${GID}" node
 	apk del shadow

@@ -8,26 +8,28 @@ export function getFormState(form) {
 
 /**
  * @param {HTMLFormElement} form
- * @param {string|string[][]|{[key: string]: string}|FormData|URLSearchParams} state
+ * @param {string|string[][]| Record<string, string>|URLSearchParams} data
  */
-export function setFormState(form, state) {
-  state = new URLSearchParams(state);
+export function setFormState(form, data) {
+  const params = new URLSearchParams(data);
 
   for (const element of form.elements) {
-    const {name, type, value} = element;
+    const {name} = element;
 
     if (!name || ['button', 'file', 'password', 'submit', 'reset'].includes(type)) {
       continue;
     }
 
-    const $value = state.get(name);
-    const $values = state.getAll(name);
+    const {type, value} = element;
+
+    const $value = params.get(name);
+    const $values = params.getAll(name);
 
     const $sole = $values.length === 1;
 
     switch (type) {
     case 'checkbox':
-      element.checked = $values.includes(value) || (value === '' && $sole && $value === 'on');
+      element.checked = $values.includes(value) || ($sole && value === '' && $value === 'on');
       break;
     case 'radio':
       element.checked = $value !== null && $value === value;

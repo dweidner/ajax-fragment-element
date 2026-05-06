@@ -1,19 +1,4 @@
 /**
- * @enum {string}
- */
-export const RequestMethod = {
-  GET: 'get',
-  POST: 'post',
-};
-
-/**
- * @enum {string}
- */
-export const ResponseStatus = {
-  OK: 200,
-};
-
-/**
  * Add query parameters to a given URL.
  *
  * @param {string|URL} url

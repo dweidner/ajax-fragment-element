@@ -24,11 +24,22 @@ const config = defineConfig([
       'quotes': ['error', 'single'],
       'linebreak-style': ['error', 'unix'],
       'comma-dangle': ['error', 'always-multiline'],
+      'jsdoc/check-tag-names': ['warn', { definedTags: ['attribute', 'customElement'] }],
       'jsdoc/tag-lines': ['error', 'never', {'startLines': 1}],
+      'jsdoc/no-undefined-types': ['warn', { definedTypes: ['NodeListOf'] }],
       'jsdoc/require-description': 'off',
       'jsdoc/require-param-description': 'off',
       'jsdoc/require-property-description': 'off',
       'jsdoc/require-returns-description': 'off',
+    },
+    settings: {
+      jsdoc: {
+        structuredTags: {
+          fires: {
+            type: 'text',
+          },
+        },
+      },
     },
     languageOptions: {
       sourceType: 'module',

@@ -1,0 +1,817 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "src/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "AjaxFragmentElement",
+          "declaration": {
+            "name": "AjaxFragmentElement",
+            "module": "src/index.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/types.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/ajax-fragment-element.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "AjaxFragmentElement",
+          "members": [
+            {
+              "kind": "method",
+              "name": "getCSPTrustedTypesPolicy",
+              "static": true,
+              "return": {
+                "type": {
+                  "text": "?TrustedTypesPolicy"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "useCSPTrustedTypesPolicy",
+              "static": true,
+              "parameters": [
+                {
+                  "name": "policy",
+                  "type": {
+                    "text": "?TrustedTypesPolicy"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "getMorphStrategy",
+              "static": true,
+              "return": {
+                "type": {
+                  "text": "MorphStrategy"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "useMorphStrategy",
+              "static": true,
+              "parameters": [
+                {
+                  "name": "fn",
+                  "type": {
+                    "text": "MorphStrategy"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "define",
+              "static": true,
+              "parameters": [
+                {
+                  "name": "tag",
+                  "default": "'ajax-fragment'",
+                  "optional": true,
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "registry",
+                  "default": "customElements",
+                  "optional": true,
+                  "type": {
+                    "text": "CustomElementRegistry"
+                  }
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "typeof AjaxFragmentElement"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "loading",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "attribute": "loading",
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "?boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "target",
+              "return": {
+                "type": {
+                  "text": "?string"
+                }
+              },
+              "attribute": "target",
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "?string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "targetElement",
+              "return": {
+                "type": {
+                  "text": "?HTMLElement"
+                }
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "progressElement",
+              "return": {
+                "type": {
+                  "text": "?HTMLElement"
+                }
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "statusElement",
+              "return": {
+                "type": {
+                  "text": "?HTMLElement"
+                }
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "errorElement",
+              "return": {
+                "type": {
+                  "text": "?HTMLElement"
+                }
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "#cspTrustedTypesPolicy",
+              "privacy": "private",
+              "type": {
+                "text": "TrustedTypesPolicy|null"
+              },
+              "static": true,
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#morphStrategy",
+              "privacy": "private",
+              "type": {
+                "text": "MorphStrategy|null"
+              },
+              "static": true,
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "load",
+              "parameters": [
+                {
+                  "name": "url",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "method",
+                  "default": "'get'",
+                  "optional": true,
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "data",
+                  "default": "{}",
+                  "optional": true,
+                  "type": {
+                    "text": "RequestData"
+                  }
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleEvent",
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "Event"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#isInScope",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "node",
+                  "type": {
+                    "text": "?Node"
+                  }
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#emit",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "eventTypes",
+                  "type": {
+                    "text": "string|string[]"
+                  }
+                },
+                {
+                  "name": "options",
+                  "default": "{}",
+                  "optional": true,
+                  "type": {
+                    "text": "object"
+                  }
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#request",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "url",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "method",
+                  "default": "'get'",
+                  "optional": true,
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "data",
+                  "default": "{}",
+                  "optional": true,
+                  "type": {
+                    "text": "RequestData"
+                  }
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "Request"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#fetch",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "request",
+                  "type": {
+                    "text": "Request"
+                  }
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "Promise<Document>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#commit",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "mutation",
+                  "type": {
+                    "text": "FragmentMutation"
+                  }
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#updateLiveRegion",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "element",
+                  "type": {
+                    "text": "?HTMLElement"
+                  }
+                },
+                {
+                  "name": "key",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "fallback",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#clearLiveRegion",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "element",
+                  "type": {
+                    "text": "?HTMLElement"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#setStatus",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "key",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "fallback",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#clearStatus",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#setError",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "key",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "fallback",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#clearError",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#saveState",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "url",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "replace",
+                  "default": "false",
+                  "optional": true,
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#syncForms",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "data",
+                  "type": {
+                    "text": "URLSearchParams"
+                  }
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#parseHTML",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "responseText",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "Document"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#morphFragment",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "targetDocument",
+                  "type": {
+                    "text": "Document"
+                  }
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#handleClick",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "MouseEvent"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#handleSubmit",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "SubmitEvent"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#handlePopState",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "PopStateEvent"
+                  }
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "ajax-fragment:loadstart"
+            },
+            {
+              "name": "ajax-fragment:load"
+            },
+            {
+              "name": "ajax-fragment:loadend"
+            },
+            {
+              "name": "ajax-fragment:updatestart"
+            },
+            {
+              "name": "ajax-fragment:update"
+            },
+            {
+              "name": "ajax-fragment:updateend"
+            },
+            {
+              "name": "ajax-fragment:error"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "loading",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "fieldName": "loading"
+            },
+            {
+              "name": "target",
+              "return": {
+                "type": {
+                  "text": "?string"
+                }
+              },
+              "fieldName": "target"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "ajax-fragment",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "AjaxFragmentElement",
+          "declaration": {
+            "name": "AjaxFragmentElement",
+            "module": "src/elements/ajax-fragment-element.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/elements/ajax-fragment-element.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/utilities/dom.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "getFormState",
+          "parameters": [
+            {
+              "name": "form",
+              "type": {
+                "text": "HTMLFormElement"
+              }
+            }
+          ],
+          "return": {
+            "type": {
+              "text": "object"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "setFormState",
+          "parameters": [
+            {
+              "name": "form",
+              "type": {
+                "text": "HTMLFormElement"
+              }
+            },
+            {
+              "name": "data",
+              "type": {
+                "text": "string|string[][]| Record<string, string>|URLSearchParams"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "getFormState",
+          "declaration": {
+            "name": "getFormState",
+            "module": "src/utilities/dom.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "setFormState",
+          "declaration": {
+            "name": "setFormState",
+            "module": "src/utilities/dom.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/utilities/http.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "addSearchParams",
+          "parameters": [
+            {
+              "name": "url",
+              "type": {
+                "text": "string|URL"
+              }
+            },
+            {
+              "name": "params",
+              "type": {
+                "text": "string|string[][]|{[key: string]: string}|FormData|URLSearchParams"
+              }
+            }
+          ],
+          "description": "Add query parameters to a given URL.",
+          "return": {
+            "type": {
+              "text": "URL"
+            }
+          }
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "addSearchParams",
+          "declaration": {
+            "name": "addSearchParams",
+            "module": "src/utilities/http.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/utilities/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/utilities/dom.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/utilities/http.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/utilities/queue.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/utilities/queue.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "nextMacroTask",
+          "return": {
+            "type": {
+              "text": "Promise<void>"
+            }
+          }
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "nextMacroTask",
+          "declaration": {
+            "name": "nextMacroTask",
+            "module": "src/utilities/queue.js"
+          }
+        }
+      ]
+    }
+  ]
+}

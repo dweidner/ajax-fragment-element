@@ -14,13 +14,11 @@ export function setFormState(form, data) {
   const params = new URLSearchParams(data);
 
   for (const element of form.elements) {
-    const {name} = element;
+    const {type, name, value} = element;
 
     if (!name || ['button', 'file', 'password', 'submit', 'reset'].includes(type)) {
       continue;
     }
-
-    const {type, value} = element;
 
     const $value = params.get(name);
     const $values = params.getAll(name);

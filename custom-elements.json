@@ -217,7 +217,7 @@
                   "default": "'get'",
                   "optional": true,
                   "type": {
-                    "text": "string"
+                    "text": "RequestMethod"
                   }
                 },
                 {
@@ -267,7 +267,7 @@
             },
             {
               "kind": "method",
-              "name": "#emit",
+              "name": "#fire",
               "privacy": "private",
               "parameters": [
                 {
@@ -307,7 +307,7 @@
                   "default": "'get'",
                   "optional": true,
                   "type": {
-                    "text": "string"
+                    "text": "RequestMethod"
                   }
                 },
                 {
@@ -351,7 +351,7 @@
                 {
                   "name": "mutation",
                   "type": {
-                    "text": "FragmentMutation"
+                    "text": "Mutation"
                   }
                 }
               ],

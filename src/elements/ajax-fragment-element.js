@@ -11,8 +11,9 @@ import {
 } from '../utilities/queue.js';
 
 /**
- * @typedef {import('../types.js').FragmentMutation} FragmentMutation
+ * @typedef {import('../types.js').Mutation} Mutation
  * @typedef {import('../types.js').MorphStrategy} MorphStrategy
+ * @typedef {import('../types.js').RequestMethod} RequestMethod
  * @typedef {import('../types.js').RequestData} RequestData
  * @typedef {import('../types.js').TrustedTypesPolicy} TrustedTypesPolicy
  */
@@ -196,7 +197,7 @@ export class AjaxFragmentElement extends HTMLElement {
 
   /**
    * @param {string} url
-   * @param {string} [method]
+   * @param {RequestMethod} [method]
    * @param {RequestData} [data]
    * @returns {Promise<void>}
    */
@@ -266,7 +267,7 @@ export class AjaxFragmentElement extends HTMLElement {
 
   /**
    * @param {string} url
-   * @param {string} [method]
+   * @param {RequestMethod} [method]
    * @param {RequestData} [data]
    * @returns {Request}
    */
@@ -326,7 +327,7 @@ export class AjaxFragmentElement extends HTMLElement {
   }
 
   /**
-   * @param {FragmentMutation} mutation
+   * @param {Mutation} mutation
    * @returns {Promise<void>}
    */
   async #commit(mutation) {

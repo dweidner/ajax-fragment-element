@@ -1,13 +1,21 @@
 /**
- * @typedef {'init'|'navigate'|'submit'|'restore'} FragmentMutationType
+ * @typedef {'init'|'navigate'|'submit'|'restore'} MutationType
  */
 
 /**
- * @typedef {object} FragmentMutation
- * @property {FragmentMutationType} type
+ * @typedef {'get'|'post'} RequestMethod
+ */
+
+/**
+ * @typedef {string|string[][]|{[key: string]: string}|FormData|URLSearchParams} RequestData
+ */
+
+/**
+ * @typedef {object} Mutation
+ * @property {MutationType} type
  * @property {string} url
- * @property {string} [method]
- * @property {URLSearchParams} [data]
+ * @property {RequestMethod} [method]
+ * @property {RequestData} [data]
  */
 
 /**
@@ -15,10 +23,6 @@
  * @param {Element} currentFragment
  * @param {Element} targetFragment
  * @returns {Promise<void>}
- */
-
-/**
- * @typedef {string|string[][]|{[key: string]: string}|FormData|URLSearchParams} RequestData
  */
 
 /**

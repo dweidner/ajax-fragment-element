@@ -7,7 +7,7 @@ A custom element to enable partial page updates via AJAX.
 ## Examples
 
 ```html
-  <ajax-fragment id="filters" target="posts">
+  <ajax-fragment target="posts">
     <form method="get" data-use-ajax>
       <!-- Form HTML omitted for brevity -->
     </form>
@@ -22,7 +22,7 @@ A custom element to enable partial page updates via AJAX.
   </ajax-fragment>
 ```
 
-- Use the `target` attribute to reference another fragment in the same document.
+- Use the `target` attribute to reference another fragment or element in the same document.
 
 ## Installation
 
@@ -55,3 +55,4 @@ Make sure you include the `<script>` in your project (choose one of these):
 
 - Load a partial page fragment via AJAX
 - Customizable morphing strategy
+- Customizable Content Security Policy

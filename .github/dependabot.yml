@@ -7,7 +7,7 @@ updates:
     commit-message:
       prefix: "chore:"
     labels:
-      - "type: maintanance"
+      - "type: maintenance"
   - package-ecosystem: "npm"
     directory: "/"
     versioning-strategy: increase
@@ -18,7 +18,7 @@ updates:
     commit-message:
       prefix: "chore:"
     labels:
-      - "type: maintanance"
+      - "type: maintenance"
     groups:
       eslint:
         patterns:
@@ -32,7 +32,7 @@ updates:
     commit-message:
       prefix: "chore:"
     labels:
-      - "type: maintanance"
+      - "type: maintenance"
     ignore:
       - dependency-name: "node"
         update-types: ["version-update:semver-major"] # Use the latest LTS version

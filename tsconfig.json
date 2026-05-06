@@ -1,0 +1,16 @@
+{
+  "include": [
+    "src/**/*.js"
+  ],
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "strict": true,
+    "strictNullChecks": false,
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "lib": ["DOM", "DOM.Iterable", "ES2022"]
+  }
+}

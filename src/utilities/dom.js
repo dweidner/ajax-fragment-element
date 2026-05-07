@@ -55,3 +55,13 @@ export function startTransition(callback) {
 
   return Promise.resolve(callback());
 }
+
+/**
+ * @param {Element} element
+ * @returns {Promise<PromiseSettledResult<Animation>[]>}
+ */
+export function animationsEnded(element) {
+  return Promise.allSettled(
+    element?.getAnimations().map((animation) => animation.finished) ?? []
+  );
+}

@@ -1,4 +1,5 @@
 import {
+  animationsEnded,
   setFormState,
   startTransition,
 } from '../utilities/dom.js';
@@ -458,11 +459,12 @@ export class AjaxFragmentElement extends HTMLElement {
   }
 
   /**
-   * @returns {void}
+   * @returns {Promise<void>}
    */
-  #clearStatus() {
-    this.#resetLiveRegion(this.statusElement);
+  async #clearStatus() {
     this.#hideElement(this.statusElement);
+    await animationsEnded(this.statusElement);
+    this.#resetLiveRegion(this.statusElement);
   }
 
   /**
@@ -475,11 +477,12 @@ export class AjaxFragmentElement extends HTMLElement {
   }
 
   /**
-   * @returns {void}
+   * @returns {Promise<void>}
    */
-  #clearError() {
-    this.#resetLiveRegion(this.errorElement);
+  async #clearError() {
     this.#hideElement(this.errorElement);
+    await animationsEnded(this.errorElement);
+    this.#resetLiveRegion(this.errorElement);
   }
 
   /**

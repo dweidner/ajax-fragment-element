@@ -1,5 +1,6 @@
 import {
   setFormState,
+  startTransition,
 } from '../utilities/dom.js';
 
 import {
@@ -49,14 +50,40 @@ export class AjaxFragmentElement extends HTMLElement {
    */
   static getMorphStrategy() {
     return this.#morphStrategy || function (currentFragment, targetFragment) {
-      const morph = () => currentFragment.replaceChildren(...targetFragment.children);
+      const updateTitle = () => {
+        document.title = targetFragment.ownerDocument.title;
+      };
 
-      if (document.startViewTransition) {
-        const viewTransition = document.startViewTransition(() => morph());
-        return viewTransition.updateCallbackDone;
-      }
+      const updateContent = () => {
+        currentFragment.replaceChildren(...targetFragment.children);
+      };
 
-      return Promise.resolve(morph());
+      const redirectFocus = () => {
+        const focusTarget = /** @type {HTMLElement} */ (
+          currentFragment.querySelector('[autofocus]') || currentFragment
+        );
+
+        const {top} = focusTarget.getBoundingClientRect();
+
+        if (top < 0) {
+          focusTarget.scrollIntoView();
+        }
+
+        focusTarget.focus({ preventScroll: true });
+      };
+
+      const morph = () => {
+        const {activeElement} = document;
+
+        updateTitle();
+        updateContent();
+
+        if (! document.contains(activeElement)) {
+          redirectFocus();
+        }
+      };
+
+      return startTransition(() => morph());
     };
   }
 
@@ -502,11 +529,12 @@ export class AjaxFragmentElement extends HTMLElement {
       origin,
       pathname,
       search,
+      hash,
     } = new URL(anchor.href);
 
     this.#commit({
       type: 'navigate',
-      url: origin + pathname,
+      url: origin + pathname + hash,
       data: new URLSearchParams(search),
     });
   }
@@ -549,11 +577,12 @@ export class AjaxFragmentElement extends HTMLElement {
       origin,
       pathname,
       search,
+      hash,
     } = new URL(href);
 
     this.#commit({
       type: 'restore',
-      url: origin + pathname,
+      url: origin + pathname + hash,
       data: new URLSearchParams(search),
     });
   }

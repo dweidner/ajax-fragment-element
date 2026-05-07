@@ -1,9 +1,9 @@
 /**
- * @typedef {'init'|'navigate'|'submit'|'restore'} MutationType
+ * @typedef {'init'|'navigate'|'submit'|'restore'|string} MutationType
  */
 
 /**
- * @typedef {'get'|'post'} RequestMethod
+ * @typedef {'get'|'post'|string} RequestMethod
  */
 
 /**
@@ -20,8 +20,8 @@
 
 /**
  * @callback MorphStrategy
- * @param {Element} currentFragment
- * @param {Element} targetFragment
+ * @param {HTMLElement} currentFragment
+ * @param {HTMLElement} targetFragment
  * @returns {Promise<void>}
  */
 

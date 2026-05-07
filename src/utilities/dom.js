@@ -43,3 +43,15 @@ export function setFormState(form, data) {
     }
   }
 }
+
+/**
+ * @param {() => void} callback
+ * @returns {Promise<void>}
+ */
+export function startTransition(callback) {
+  if (document.startViewTransition) {
+    return document.startViewTransition(callback).updateCallbackDone;
+  }
+
+  return Promise.resolve(callback());
+}

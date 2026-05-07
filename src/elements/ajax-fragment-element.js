@@ -117,8 +117,8 @@ export class AjaxFragmentElement extends HTMLElement {
    */
   set loading(value) {
     this.toggleAttribute('loading', value);
-    this.targetElement?.toggleAttribute('loading', value);
-    this.progressElement?.toggleAttribute('hidden', !value);
+    this.#toggleVisibility(this.progressElement, value);
+    this.targetElement?.setAttribute('aria-busy', value ? 'true' : 'false');
   }
 
   /**
@@ -394,6 +394,42 @@ export class AjaxFragmentElement extends HTMLElement {
 
   /**
    * @param {?HTMLElement} element
+   * @param {?boolean} [force]
+   * @returns {boolean}
+   */
+  #toggleVisibility(element, force = null) {
+    const isVisible = force !== null ? force : !element?.hasAttribute('hidden');
+
+    if (isVisible) {
+      this.#showElement(element);
+    } else {
+      this.#hideElement(element);
+    }
+
+    return isVisible;
+  }
+
+  /**
+   * @param {?HTMLElement} element
+   */
+  #showElement(element) {
+    if (element?.hasAttribute('hidden')) {
+      element.setAttribute('data-initially-hidden', '');
+      element.removeAttribute('hidden');
+    }
+  }
+
+  /**
+   * @param {?HTMLElement} element
+   */
+  #hideElement(element) {
+    if (element?.hasAttribute('data-initially-hidden')) {
+      element.setAttribute('hidden', '');
+    }
+  }
+
+  /**
+   * @param {?HTMLElement} element
    * @param {string} key
    * @param {string} fallback
    */
@@ -406,7 +442,7 @@ export class AjaxFragmentElement extends HTMLElement {
   /**
    * @param {?HTMLElement} element
    */
-  #clearLiveRegion(element) {
+  #resetLiveRegion(element) {
     if (element) {
       element.textContent = '';
     }
@@ -417,6 +453,7 @@ export class AjaxFragmentElement extends HTMLElement {
    * @param {string} fallback
    */
   #setStatus(key, fallback) {
+    this.#showElement(this.statusElement);
     this.#updateLiveRegion(this.statusElement, key, fallback);
   }
 
@@ -424,7 +461,8 @@ export class AjaxFragmentElement extends HTMLElement {
    * @returns {void}
    */
   #clearStatus() {
-    this.#clearLiveRegion(this.statusElement);
+    this.#resetLiveRegion(this.statusElement);
+    this.#hideElement(this.statusElement);
   }
 
   /**
@@ -432,6 +470,7 @@ export class AjaxFragmentElement extends HTMLElement {
    * @param {string} fallback
    */
   #setError(key, fallback) {
+    this.#showElement(this.errorElement);
     this.#updateLiveRegion(this.errorElement, key, fallback);
   }
 
@@ -439,7 +478,8 @@ export class AjaxFragmentElement extends HTMLElement {
    * @returns {void}
    */
   #clearError() {
-    this.#clearLiveRegion(this.errorElement);
+    this.#resetLiveRegion(this.errorElement);
+    this.#hideElement(this.errorElement);
   }
 
   /**

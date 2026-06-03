@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM node:24.15-alpine3.23 AS base
+FROM node:24.16-alpine3.23 AS base
 
 ARG UID=1000
 ARG GID=1000

@@ -281,7 +281,13 @@ export class AjaxFragmentElement extends HTMLElement {
    * @returns {boolean}
    */
   #isInScope(node) {
-    return this.contains(node) || !! this.targetElement?.contains(node);
+    const closestFragment = /** @type {?AjaxFragmentElement} */ (node)?.closest(this.localName);
+
+    if (closestFragment) {
+      return closestFragment === this;
+    }
+
+    return !! this.targetElement?.contains(node);
   }
 
   /**
@@ -497,7 +503,7 @@ export class AjaxFragmentElement extends HTMLElement {
       state.fragments = {};
     }
 
-    state.fragments[this.id] = url;
+    state.fragments[this.target] = url;
 
     if (replace) {
       history.replaceState(state, '', url);
@@ -609,7 +615,7 @@ export class AjaxFragmentElement extends HTMLElement {
    */
   #handlePopState(event) {
     const href = /** @type {?string} */ (
-      event.state?.fragments?.[this.id]
+      event.state?.fragments?.[this.target]
     );
 
     if (! href) {

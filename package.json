@@ -3,7 +3,7 @@
   "description": "A custom element to enable partial page updates via AJAX.",
   "homepage": "https://github.com/dweidner/ajax-fragment-element#readme",
   "license": "ISC",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "type": "module",
   "main": "src/index.js",
   "customElements": "custom-elements.json",
